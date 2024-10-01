@@ -1,0 +1,115 @@
+<html>
+    <body class="body">
+        
+
+<div class="container rounded shadow p-3 my-4 border">
+    <div class="header bg-primary rounded">
+        <h3 class="text-left p-2 pl-4">Dashboard</h3>
+
+      </div>
+  
+    <div class="row mx-auto my-3 rounded-shadow">
+        <div class="col-4 p-3 ">
+            <h3 class='text-center'></h3>
+<div class="card">
+<div class="card-body">
+    <div class="card-text">
+        <ul>
+            <div class="card-title h5">Performance Measures</div>
+            <li>Investment Amount: {{ portfolio_id }}<span id="volatility1"></span></li>
+            <li>Volatitlity: <span id="volatility1">0.201015865</span></li>
+            <li>Sharpe Ratio: {{sharpe_ratio}}<span id="volatility1"></span></li>
+
+            <li>5 Year Return: {{five_year_return}}<span id="fiveyear1"></span></li>
+
+            <li>Portfolio Beta: {{portfolio_beta}}<span id="beta1"></span></li>
+            <li>Treynor Ratio: {{treynor_ratio}}<span id="treynor1"></span></li>
+            <li>Jensen's Alpha: {{jensens_alpha}}<span id="jensen1"></span></li>
+            <li>VAR(99%): {{value_at_risk}}<span id="var1"></span></li>
+
+        </ul>
+
+    </div>
+</div>
+</div>
+</div>
+
+<div class="col-4 p-3 ">
+<div class="container"  *ngIf="doughnutChartLabels && doughnutChartData">
+  <canvas baseChart width="1000" height="1000"
+  [data]="doughnutChartData"
+  [labels]="doughnutChartLabels"
+  [chartType]="doughnutChartType"
+  [colors]="pieChartColors"
+  >
+</canvas>
+</div>
+ 
+<!--       COMMENTS      -->
+</div>
+<div class="col">
+    <select id="itemList"  [(ngModel)]="portfolioName"  class="form-control " (change)="getPieChartInfo()">
+  
+        <option *ngFor="let site of portfolioNameList" [id]="site" [value]="site">{{site}}</option>
+    
+      </select>
+</div>
+
+    </div>
+
+<!--Second frame for sector data and pie chart-->
+
+<div class="row mx-auto my-3 rounded-shadow">
+    <div class="col-4 p-3 ">
+        <h3 class='text-center'></h3>
+<div class="card">
+    <div class="card-body">
+        <div class="card-text">
+            <ul>
+                <div class="card-title h5">Sector Data </div>
+                <p style="white-space: pre-wrap"><li>Number of stocks: {{counter}} </li></p>
+                <p style="white-space: pre-wrap"> 
+                    <li >Stocks are: 
+
+                        <ul  *ngFor="let i of stockList" >
+                            <li  >  {{i.split(',')[0]}} ( <em>{{i.split(',')[1]}}</em> ) </li>
+                        </ul>
+                    </li>
+                 </p>
+                    
+               <li>Sector count:
+                <ul  *ngFor="let i of sector"> 
+                    <li *ngIf="i.split(',')[0]!='null'" > {{i.split(',')[0]}} ( <strong>{{i.split(',')[1]}}</strong> )</li>
+                </ul>
+             </li>
+            </ul>
+
+        </div>
+    </div>  
+</div>
+</div>
+
+<div class="col-4 p-3">
+<div style="width:340px; height:340px;"  class="container" *ngIf="doughnutChartData2 && doughnutChartLabels2">
+<canvas baseChart width="600" height="600"
+[labels]="doughnutChartLabels2"
+[data]="doughnutChartData2"
+[chartType]="doughnutChartType"
+[colors]="pieChartColors"
+>
+</canvas>
+</div>
+</div>
+
+
+
+</div>
+
+<!--Main body frame-->
+</div>
+
+
+
+
+</body>
+</html>

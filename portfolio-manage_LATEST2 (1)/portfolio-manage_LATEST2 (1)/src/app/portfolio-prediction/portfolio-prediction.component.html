@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+    <body class="body">
+        <div class="container rounded shadow p-3 my-4 border">
+            <div class="header bg-primary rounded">
+                <h3 class="text-left p-2">Prediction Dashboard</h3>
+              </div>
+            <div class="row p-3">
+                <div class="col-md-4">
+                </div>
+                <div class="col-md-8 d-flex justify-content-end ">
+                    <form >
+                        <div class="form-group">
+                            <div class="row">
+                              
+                                <div class="col">
+                                    <select   [(ngModel)]="portName" class="form-control" (change)="getinfo()" name="port">
+                                        <option  *ngFor="let prod of portfolioName" [value]="prod">{{ prod }}</option>
+                                    </select>
+                                </div>
+
+                                <!-- <div class="col-sm-6">                 -->
+                                    <!--  -->
+                                    <!-- </select> -->
+                                <!-- </div> -->
+                            </div>
+          
+          
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                      
+            
+                          <div class="col-lg-6 p-3"  *ngFor="let p of portfolioPrediction" >
+                      
+                                  <table class="table rounded shadow p-3 my-4 border table-striped">
+                                    <caption>{{p.month}}</caption>
+  
+                                    <thead>
+                                          <tr>
+                                              <th colSpan="4" class="text-center h4"></th>
+                                          </tr>
+                                          <tr>
+                                              <th scope="col">Latest Value</th>
+                                              <th scope="col">Overall Gain</th>
+          
+                                              <th scope="col">Investment Cost</th>
+                                              <th scope="col">Today's Gain</th>
+                                          </tr>
+                                      </thead>
+                                      <tbody>
+                                          <tr>
+                                              <th scope="row">{{p.latest_value}}</th>
+                                              <td>{{p.overall_gain}}</td>
+                                              <td>{{p.investment_Cost}}</td>
+                                              <td>{{p.todays_gain}}</td>
+                                          </tr>
+                                          <tr>
+                                              <th scope="col">Portfolio Beta</th>
+                                              <th scope="col">Sharpe Ratio</th>
+                                              <th scope="col">Jensen's Alpha</th>
+                                              <th scope="col">VAR(99%)</th>
+                                          </tr>
+                                          <tr>
+                                              <td>{{p.portfolio_beta}}</td>
+                                              <td>{{p.sharpe_ratio}}</td>
+                                              <td>{{p.jensens_alpha}}</td>
+                                              <td>{{p.value_at_risk}}</td>
+                                          </tr>
+                                      </tbody>
+                                  </table>
+                              </div>
+                      
+          </div>
+          </div>
+          
+        
+
+    </body>
+</html>
+  

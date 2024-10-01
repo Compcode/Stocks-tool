@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+
+<body class="body">
+  <div class="container rounded shadow p-3 my-4 border position">
+    <div class="header bg-primary rounded">
+      <h3 class="text-left p-2">Create Portfolio</h3>
+    </div>
+    <form #f="ngForm" class="text-center border border-light p-5">
+      <div className="container-fluid">
+        <ng-template [ngIf]="active">
+          <div name="erro" class="alert alert-success" role="alert">
+            {{ message }}
+          </div>
+        </ng-template>
+
+        <div class="form-group">
+          <input class="form-control" type="text" [(ngModel)]="portfolioName" name="PortfolioName"
+            placeholder="PortfolioName" required />
+        </div>
+
+        <div class="form-group">
+          <input class="form-control" disabled="{{ selectedStock.length > 0 }}" type="number"
+            [(ngModel)]="investmentAmount" name="PortfolioAmt" min="0" placeholder="Investment Amount" required />
+        </div>
+
+        <!-- selected stock using table -->
+        <table *ngIf="selectedStock.length > 0" class="table table-sm table-condensed table-hover table-bordered">
+          <thead>
+            <tr>
+              <th>Stock Name</th>
+              <th>LTP/Nav</th>
+              <th>Weight</th>
+              <th>Units</th>
+              <th>Amount</th>
+              <th>Remove</th>
+            </tr>
+          </thead>
+          <tbody *ngFor="let stock of selectedStock; let i = index">
+            <tr>
+              <td>{{ stock}}</td>
+              <td>{{ selectedStockLTP_NAV[i] }}</td>
+              <td>{{ toShow_pecentageAllocation[i] | number : '1.1-1' }}%</td>
+              <td>
+                {{
+                percentAmount[i] / +selectedStockLTP_NAV[i]
+                | number: "1.0-0"
+                }}
+              </td>
+              <td>{{ percentAmount[i] | shortDecimalPipe: 4 }}</td>
+
+              <td>
+                <button [disabled]="isReadyToCreate" (click)="OnRemoveStock(i)" type="button" class="btn btn-outline-danger btn-sm">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="form-row">
+          <!--New dropdown for sector info-->
+
+          <div class="form-group col-md-4">
+            <span>Choose Sector</span>
+            <select [(ngModel)]="sectorData" class="form-control" name="parnetJOb1" (change)="getFilterStockList()">
+              <option>
+                <span>ALL SECTORS</span>
+              </option>
+              <option *ngFor="let sector of sectorList">{{ sector }}</option>
+            </select>
+            {{ sectorData }}
+          </div>
+          <!--Display stocks names and their weight when added to portfolio on click of add button-->
+          <!-- 
+            <div class="form-group col-md-3">
+            <span> Stocks and Weight allocated </span>
+            <ul>
+              <li  *ngFor="let stocks of selectedStock"> {{stocks}} </li>
+            </ul>
+          </div>
+
+          <div class="form-group col-md-2 p-4">
+            <ul>
+              <li *ngFor="let weight of pecentageAllocation"> {{weight}} </li>
+            </ul>
+          </div>
+
+          <div class="form-group col-md-2 p-4">
+            <ul>
+              <li *ngFor="let percent of percentAmount"> {{percent}} </li>
+            </ul>
+          </div>
+         -->
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <select  [(ngModel)]="stockName" class="form-control" name="parnetJOb">
+              <option *ngFor="let industry of stockList">
+                {{ industry }}
+              </option>
+            </select>
+            {{ stockName }}
+            <!-- <input class="col" type="text" class="form-control" name="stock" placeholder="Enter Stock name"> -->
+          </div>
+
+          <div class="form-group col-md-4">
+            <input class="form-control" type="number" [(ngModel)]="psAllocation" name="pstock" max="100" min="0"
+              placeholder="Units Allocation" required />
+            <span>
+              Allocation Left -
+              {{ stockAllocationRemaining | shortDecimalPipe: 4 }}%
+              <span *ngIf="investmentAmount > 0">(
+                {{
+                (stockAllocationRemaining * investmentAmount) / 100
+                | shortDecimalPipe: 4
+                }}
+                ₹ )</span>
+            </span>
+
+            <!-- <span>Allocation  remaining: {{ stockAllocationRemaining  | shortDecimalPipe:4 }}%</span> -->
+            <br />
+          </div>
+          <div class="form-group col-md-1">
+            <button [disabled]="(stockName.length==0 && psAllocation<=0) || isReadyToCreate" class="btn btn-primary"
+             (click)="addStock()">Add</button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <!-- Dropdown to select mutual fund from section of mutual fund house -->
+          <div class="form-group col-md-4">
+            <span><b>Choose Mutual Fund</b></span>
+            <select [(ngModel)]="mFund" class="form-control" name="parnetJOB" (change)="getMF_list()">
+              <option *ngFor="let mfSector of mutualFund">{{ mfSector }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <select [(ngModel)]="mfName" class="form-control" name="parnetJOb">
+              <option *ngFor="let industry of mfList">{{ industry }}</option>
+            </select>
+            {{ mfName }}
+            <!-- <input class="col" type="text" class="form-control" name="stock" placeholder="Enter Stock name"> -->
+          </div>
+          <div class="form-group col-md-4">
+            <input class="form-control" type="number" name="pstock" max="100" min="0" [(ngModel)]="MF_psAllocation"
+              placeholder="Units Allocation" required />
+          </div>
+          <div class="form-group col-md-1">
+            <button [disabled]="mfName.length==0 && MF_psAllocation<=0 || isReadyToCreate" (click)="OnAdd_MF()" class="btn btn-primary">Add</button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <input class="col" type="text" class="form-control" placeholder="Enter Commodity name" />
+          </div>
+          <div class="form-group col-md-4">
+            <input class="form-control" type="number" name="pstock" max="100" min="0"
+              placeholder="Percentage Allocation" />
+          </div>
+          <div class="form-group col-md-1">
+            <button class="btn btn-primary">Add</button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <input class="col" type="text" class="form-control" placeholder="Enter Bond name" />
+          </div>
+          <div class="form-group col-md-4">
+            <input class="form-control" type="number" name="pstock" max="100" min="0"
+              placeholder="Percentage Allocation" />
+          </div>
+          <div class="form-group col-md-1">
+            <button class="btn btn-primary">Add</button>
+          </div>
+        </div>
+        <!-- <p className="text-info h6"> Total Remaining Fund: {portfolioData.remainingAllocation} % | Total Fund Allocated : {100 - portfolioData.remainingAllocation} % </p>
+            {exceedFlag ? <p className="text-danger">Total fund Allocation Should not exceed 100 %, allocate less than or equal to the {portfolioData.remainingAllocation} % .</p> : null}
+            {portfolioData.remainingAllocation == 0 ? <p className="text-success h6">You have allocated 100 % of your total fund .</p> : null} -->
+      </div>
+      <button *ngIf="!isReadyToCreate" (click)="updateWeight()" id="updateWeightModel" type="submit"
+        class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+        Validate PortFolio
+      </button>
+
+      <button *ngIf="isReadyToCreate" id="submit" type="submit" class="btn btn-success" 
+      (click)="submitPortfolio1()"
+        data-toggle="modal" data-target="#myModalCreatePort">
+        Create Portfolio
+      </button>
+    </form>
+
+    <!-- Update weight Model -->
+    <div class="modal fade" id="myModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4 class="modal-title">Message</h4>
+            <button type="button" class="close" data-dismiss="modal">
+              &times;
+            </button>
+          </div>
+          <!-- Modal body -->
+          <div class="modal-body">
+            {{ UpdateModelMessage }}
+          </div>
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">
+              Ok
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CraetePortModel -->
+    <div class="modal fade" id="myModalCreatePort">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4 class="modal-title">Message</h4>
+            <button type="button" class="close" data-dismiss="modal">
+              &times;
+            </button>
+          </div>
+          <!-- Modal body -->
+          <div class="modal-body text-success h6">
+            PortFolio Created Succesfully
+          </div>
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--  created Succesfuuly Model-->
+    <div class="modal fade" id="PortCreatedmodel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body text-success">
+            PortFolio Created Successfully
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+              Ok
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

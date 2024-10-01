@@ -1,0 +1,40 @@
+<html>
+    <body class="body">
+<div class="container rounded shadow p-3 my-4 border">
+    <div class="header bg-primary rounded">
+        <h3 class="text-left p-2">Optimize Portfolio</h3>
+
+      </div>
+       
+    <div className="Home container">
+        
+            <div class="row mx-auto my-3 rounded-shadow">
+                <div class="col-4 mt-5 mx-5">
+                    <select id="itemList"  [(ngModel)]="portfolioName"  class="form-control" (change)="getLineChartInfo()">
+  
+                        <option *ngFor="let site of portfolioNameList" [id]="site" [value]="site">{{site}}</option>
+                    
+                      </select>
+                </div>
+                <div className="col-10 m-1 ">
+    
+                    <!-- <Line data={SelectedChartData} />} -->
+                </div>
+    
+            </div>
+        
+    </div>
+    <div style="display: block;">
+        <canvas baseChart width="150" height="50"
+        [datasets]="lineChartData" 
+        [labels]="lineChartLabels" 
+        [options]="lineChartOptions"
+        [colors]="lineChartColors" 
+        [legend]="lineChartLegend" 
+        [chartType]="lineChartType" 
+        [plugins]="lineChartPlugins"></canvas>
+        </div>
+    </div>
+
+</body>
+</html>
