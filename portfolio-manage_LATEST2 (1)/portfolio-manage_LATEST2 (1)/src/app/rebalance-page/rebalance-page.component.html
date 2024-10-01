@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+    <body class="body">
+
+                <div class="container rounded shadow p-3 my-4 border">
+
+                    <div class="header">
+                        <h3 class="text-left p-2">Rebalance Page</h3>
+                    </div>
+    
+      
+                       
+<!--  Text below the header  -->
+<div class="form-row">
+  <div class="form-group col-md-2 p-3">
+      <span><b><h5>Edit Portfolio : </h5> </b></span>
+  </div>
+   
+  <div class="form-group col-md-3 p-3">
+   <select id="itemList"  [(ngModel)]="portfolioName"  class="form-control" (change)="getPortfolioNameList()">
+       <option *ngFor="let site of portfolioNameList"  [id]="site" [value]="site">{{site}}</option>
+   </select>  
+  </div>
+
+<!-- Portfolio Amount textbox-->
+  <div class="form-group col-md-4 p-3">
+   <input [(ngModel)]="investmentAmount" class="form-control" type="number" name="PortfolioAmt" [id]="PortfolioAmt" 
+       placeholder="New Investment Amount: Add" />
+     <label class="text-dark">Total Investment - <strong>{{  +invAmt | number : '1.1-2' }} /-</strong></label>
+     </div>
+ <!-- [(ngModel)]="invAmt" -->
+
+ <div class="form-group col-md-1 p-3">
+   <button class="btn btn-success" (click)="updateStockDetails()">Update</button>   
+ </div>
+ <div class="form-group col-md-1 p-3">
+   <button class="btn btn-primary" (click)="ResetStockDetails()">Reset</button>   
+ </div>
+</div>
+
+<!-- selected stock using table -->
+<table *ngIf="stockNames.length>0" class="table  table-sm table-condensed table-hover table-bordered text-center ">
+<thead>
+<tr>
+<th>Stock Name</th>
+<th title="Last Trade Price">LTP</th>
+<th>Weight</th>
+<th>Amount</th>
+<th>Units/Stock</th>
+<th>- Units +</th>
+<th>Remove</th>
+</tr>
+</thead>
+
+<tbody *ngFor="let stock of stockNames; let i=index">
+<tr >
+<td>{{ stockNames[i] }}</td>
+<td> {{ stockClosePrice[i] }} </td>
+<td>{{ (stockPercent[i]) | number : '1.1-2' }}%</td>
+<td>{{ allocationAmt[i] | number : '1.1-1' }}</td>
+<td> {{ ((+allocationAmt[i] / +stockClosePrice[i])) | number: '1.1-1' }} </td>
+<td style="width: 12.66%">
+ <button (click)="UnitsMinus(i)" type="button" class="btn btn-outline-danger btn-sm"><span aria-hidden="true">&minus;</span></button>
+ <span>&nbsp;&nbsp;&nbsp;</span>
+ <button (click)="UnitsAdd(i)" type="button" class="btn btn-success btn-sm"><span aria-hidden="true" >&plus;</span></button>
+</td>
+<td><button (click)="OnRemoveStock(i)" type="button" class="btn btn-outline-danger btn-sm"> <span aria-hidden="true">&times;</span></button></td>
+</tr>
+
+</tbody>
+</table>
+         
+ <div class="form-row" >
+   
+<!--       Dropdown for sector info      -->                    
+   <div class="form-group col-md-4">
+     <span><b>Select Sector</b></span>
+     <select [(ngModel)]="sectorDataRB" class="form-control" name="parnetJOb1"  (change)="getFilterStockList()">
+       <option>
+         <span>ALL SECTORS</span>
+       </option>
+       <option *ngFor="let sector of sectorListRB" >{{ sector }}</option>  
+     </select>
+     {{sectorDataRB}}
+   
+   </div>
+     
+ </div>
+
+ <div class="form-row">
+   <div class='form-group col-md-4'>
+     <select [(ngModel)]="stockName" class="form-control"  name="parnetJOb">
+         <option  *ngFor="let industry of stockListRB" >{{ industry }}</option>    
+     </select>
+     {{stockName}}
+       <!-- <input class="col" type="text" class="form-control" name="stock" placeholder="Enter Stock name"> -->
+
+   </div>
+
+   <div class="form-group col-md-4">
+       <input class="form-control" type="number" [(ngModel)]="psAllocation" name="pstock" max="100" min="0" placeholder="Percentage Allocation" />
+       <!-- <span >Allocation remaining:  {{ stockAllocationRemaining | number : '1.0-0' }} %</span> -->
+       <span >Investment remaining (Rs): {{ allocationLeft | number : '1.0-0'}} </span>
+   </div>
+   <div class="form-group col-md-1">
+       <button class="btn btn-primary" (click)="addStock()">Add</button>
+   </div>    
+   
+ </div>
+
+<!-- Mutual Funds part -->
+<div class="form-row">
+
+<!-- Dropdown to select mutual fund from section of mutual fund house -->
+   <div class="form-group col-md-4">
+     <span><b>Choose Mutual Fund</b></span>
+     <select [(ngModel)]="mFund" class="form-control" name="parnetJOB" (change)="getMF_list()">
+       <option *ngFor="let mfSector of mutualFund"> {{mfSector}} </option>
+     </select>
+   </div>
+ </div>
+
+   <div class="form-row">
+   <div class='form-group col-md-4'>
+     <select  [(ngModel)]="mfName" class="form-control" name="parnetJOb">
+       <option  *ngFor="let industry of mfList">{{ industry }}</option>
+
+     </select>
+     {{mfName}}
+     <!-- <input class="col" type="text" class="form-control" name="stock" placeholder="Enter Stock name"> -->
+
+   </div>
+   <div class="form-group col-md-4">
+     <input class="form-control" type="number" name="pstock" max="100" min="0"
+     [(ngModel)]="MF_psAllocation" placeholder="Percentage Allocation" required/>
+   </div>
+   
+   <div class="form-group col-md-1">
+     <button (click)="OnAdd_MF()" class="btn btn-primary">Add</button>
+   </div>
+ </div>
+
+<div class="form-row">
+                    <span><b>Choose Bond Name</b></span>
+                  </div>
+
+                  <div class="form-row" >
+                    <div class='form-group col-md-4'>
+                      <select [(ngModel)]="bondName" class="form-control" name="bondParnet">
+                        <option *ngFor="let bonds of bondList"> {{bonds}} </option>
+                      </select>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <input class="form-control" type="number" name="pstock" max="100" min="0" 
+                        [(ngModel)]="Bond_value" placeholder="Units Allocation" />
+                    </div>
+                    <div class="form-group col-md-1">
+                        <button (click)="BondAdd()" class="btn btn-primary">Add</button>
+                    </div>
+                  </div>
+
+ <div class="form-row" >
+   <div class='form-group col-md-4'>
+       <input class="col" type="text" class="form-control"  placeholder="Enter Commodity name">
+
+   </div>
+   <div class="form-group col-md-4">
+       <input class="form-control" type="number" name="pstock" max="100" min="0" placeholder="Percentage Allocation" />
+   </div>
+   <div class="form-group col-md-1">
+       <button class="btn btn-primary">Add</button>
+   </div>
+ </div>
+
+ <div class="form-row" >
+   <div class='form-group col-md-4'>
+       <input class="col" type="text" class="form-control"  placeholder="Enter Bond name">
+
+   </div>
+   <div class="form-group col-md-4">
+       <input class="form-control" type="number" name="pstock" max="100" min="0" placeholder="Percentage Allocation" />
+   </div>
+   <div class="form-group col-md-1">
+       <button class="btn btn-primary">Add</button>
+   </div>
+ </div>
+
+    
+
+                 <div class="d-flex justify-content-center">
+                  <button (click)="UpdatePortFolioDB()" type="submit" class="btn btn-primary mx-auto m-3" >Update Portfolio</button>
+                 </div>
+
+                </div>
+                
+    </body>
+</html>
